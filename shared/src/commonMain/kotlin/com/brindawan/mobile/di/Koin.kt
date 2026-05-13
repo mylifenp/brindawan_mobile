@@ -10,6 +10,8 @@ import com.brindawan.mobile.screens.detail.DetailViewModel
 import com.brindawan.mobile.screens.list.ListViewModel
 import com.brindawan.mobile.screens.products.ProductsViewModel
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.cache.normalized.memory.MemoryCacheFactory
+import com.brindawan.mobile.cache.Cache.cache
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
@@ -24,7 +26,7 @@ private const val DEFAULT_KEYCLOAK_REALM_URL = "https://auth.brindawan.com/realm
 private const val DEFAULT_KEYCLOAK_CLIENT_ID = "brindawan_id"
 private const val DEFAULT_KEYCLOAK_REDIRECT_URI = "com.brindawan.mobile://auth/callback"
 private const val DEFAULT_KEYCLOAK_SCOPE = "openid profile email"
-private const val DEFAULT_KEYCLOAK_CLIENT_SECRET = "VOvYXWlK8SEyJzBlfXQAaVyLC4PH3527"
+private const val DEFAULT_KEYCLOAK_CLIENT_SECRET = ""
 
 val dataModule = module {
     single {
@@ -66,15 +68,22 @@ data class AppConfig(
     val keycloakClientSecret: String = DEFAULT_KEYCLOAK_CLIENT_SECRET,
 )
 
+
+fun initApolloClient(config: AppConfig): ApolloClient {
+    val cacheFactory = MemoryCacheFactory(10 * 1024 * 1024)
+    return ApolloClient.Builder()
+        .serverUrl(config.graphqlUrl)
+        .cache(cacheFactory)
+        .build()
+}
+
 fun initKoin(config: AppConfig) {
     startKoin {
         modules(
             module {
                 single { config }
                 single {
-                    ApolloClient.Builder()
-                        .serverUrl(get<AppConfig>().graphqlUrl)
-                        .build()
+                    initApolloClient(get<AppConfig>())
                 }
             },
             dataModule,

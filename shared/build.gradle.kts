@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.apollo.runtime)
+//            implementation(libs.apollo.normalized.cache)
+            implementation(libs.normalized.cache)
 
             implementation(libs.navigation.compose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
@@ -84,6 +86,8 @@ apollo {
             endpointUrl.set("https://api.brindawan.com/graphql")
             schemaFile.set(file("src/commonMain/graphql/graphql.schema.json"))
         }
+        plugin("com.apollographql.cache:normalized-cache-apollo-compiler-plugin:1.0.3")
+        pluginArgument("com.apollographql.cache.packageName", packageName.get())
     }
     generateSourcesDuringGradleSync.set(true)
 }

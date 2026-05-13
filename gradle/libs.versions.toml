@@ -6,6 +6,7 @@ android-targetSdk = "36"
 androidx-activity = "1.13.0"
 androidx-lifecycle = "2.10.0"
 apollo = "5.0.0"
+normalizedCache = "1.0.3"
 coil = "3.5.0-beta01"
 compose-material-icons = "1.7.3"
 compose-navigation = "2.9.2"
@@ -15,7 +16,7 @@ kotlin = "2.3.21"
 ktor = "3.4.3"
 material3 = "1.9.0"
 keycloakClient = "1.0.2"
-serializationJson = "1.10.0"
+serializationJson = "1.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -43,8 +44,8 @@ keycloak-client = { module = "io.github.klsoft-mobile.kotlin.multiplatform:keycl
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
 
 apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
-apollo-normalized-cache = { group = "com.apollographql.apollo", name = "apollo-normalized-cache", version.ref = "apollo" }
-apollo-normalized-cache-sqlite = { group = "com.apollographql.apollo", name = "apollo-normalized-cache-sqlite", version.ref = "apollo" }
+normalized-cache = { group = "com.apollographql.cache", name = "normalized-cache", version.ref = "normalizedCache" }
+#apollo-normalized-cache = { group = "com.apollographql.apollo", name = "apollo-normalized-cache", version.ref = "apollo" }
 apollo-mockserver = { group = "com.apollographql.apollo", name = "apollo-mockserver", version.ref = "apollo" }
 apollo-testing-support = { group = "com.apollographql.apollo", name = "apollo-testing-support", version.ref = "apollo" }
 

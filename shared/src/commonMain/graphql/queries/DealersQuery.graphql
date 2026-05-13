@@ -1,0 +1,6 @@
+query Dealers {
+    dealers {
+        id
+        shopName
+    }
+}

@@ -22,7 +22,7 @@ kotlin {
     }
 
     android {
-        namespace = "com.brindawan.mobile"
+        namespace = "com.brindawan.mobile.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -64,6 +64,9 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+
+            implementation(libs.keycloak.client)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

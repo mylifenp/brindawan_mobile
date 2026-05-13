@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.brindawan.mobile.screens.auth.AccountScreen
 import com.brindawan.mobile.screens.detail.DetailScreen
 import com.brindawan.mobile.screens.list.ListScreen
 import com.brindawan.mobile.screens.products.ProductsScreen
@@ -93,8 +94,7 @@ fun MainTabsScreen() {
                     .padding(innerPadding),
             )
 
-            BottomTab.Account -> PlaceholderPage(
-                title = "Account",
+            BottomTab.Account -> AccountScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),

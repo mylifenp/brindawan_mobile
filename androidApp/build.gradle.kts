@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.net.URI
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -13,16 +14,54 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
 }
 
+val graphqlServerUrl = providers.gradleProperty("GRAPHQL_SERVER_URL")
+    .orElse(providers.environmentVariable("GRAPHQL_SERVER_URL"))
+    .orElse("https://api.brindawan.com/graphql")
+val keycloakRealmUrl = providers.gradleProperty("KEYCLOAK_REALM_URL")
+    .orElse(providers.environmentVariable("KEYCLOAK_REALM_URL"))
+    .orElse("https://auth.brindawan.com/realms/brindawan")
+val keycloakClientId = providers.gradleProperty("KEYCLOAK_CLIENT_ID")
+    .orElse(providers.environmentVariable("KEYCLOAK_CLIENT_ID"))
+    .orElse("brindawan_id")
+val keycloakRedirectUri = providers.gradleProperty("KEYCLOAK_REDIRECT_URI")
+    .orElse(providers.environmentVariable("KEYCLOAK_REDIRECT_URI"))
+    .orElse("com.brindawan.mobile://auth/callback")
+val keycloakScope = providers.gradleProperty("KEYCLOAK_SCOPE")
+    .orElse(providers.environmentVariable("KEYCLOAK_SCOPE"))
+    .orElse("openid profile email")
+val keycloakClientSecret = providers.gradleProperty("KEYCLOAK_CLIENT_SECRET")
+    .orElse(providers.environmentVariable("KEYCLOAK_CLIENT_SECRET"))
+    .orElse("VOvYXWlK8SEyJzBlfXQAaVyLC4PH3527")
+
+val parsedRedirectUri = URI(keycloakRedirectUri.get())
+val redirectScheme = parsedRedirectUri.scheme ?: "com.brindawan.mobile"
+val redirectHost = parsedRedirectUri.host ?: "auth"
+val redirectPath = parsedRedirectUri.path ?: "/callback"
+
 android {
-    namespace = "com.jetbrains.brindawan"
+    namespace = "com.brindawan.mobile"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
-        applicationId = "com.jetbrains.brindawan"
+        applicationId = "com.brindawan.mobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "GRAPHQL_SERVER_URL", "\"${graphqlServerUrl.get()}\"")
+        buildConfigField("String", "KEYCLOAK_REALM_URL", "\"${keycloakRealmUrl.get()}\"")
+        buildConfigField("String", "KEYCLOAK_CLIENT_ID", "\"${keycloakClientId.get()}\"")
+        buildConfigField("String", "KEYCLOAK_REDIRECT_URI", "\"${keycloakRedirectUri.get()}\"")
+        buildConfigField("String", "KEYCLOAK_SCOPE", "\"${keycloakScope.get()}\"")
+        buildConfigField("String", "KEYCLOAK_CLIENT_SECRET", "\"${keycloakClientSecret.get()}\"")
+
+        manifestPlaceholders["keycloakRedirectScheme"] = redirectScheme
+        manifestPlaceholders["keycloakRedirectHost"] = redirectHost
+        manifestPlaceholders["keycloakRedirectPath"] = redirectPath
     }
     packaging {
         resources {

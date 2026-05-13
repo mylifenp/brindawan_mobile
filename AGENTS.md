@@ -8,6 +8,7 @@
 - [Apollo Kotlin](https://www.apollographql.com/docs/kotlin/v5)
 - [Kotlin] version 2.3.21 [Documentation](https://kotlinlang.org/docs/home.html)
 - [Multiplatform] version 2.3.21 [Documentation](https://kotlinlang.org/docs/multiplatform/get-started.html)
+- [kotlin-multiplatform-keycloak-client] version 1.0.2 [Documentation](https://github.com/klsoft-mobile/kotlin-multiplatform-keycloak-client)
 
 
 <!-- BEGIN: template-for-this-project -->

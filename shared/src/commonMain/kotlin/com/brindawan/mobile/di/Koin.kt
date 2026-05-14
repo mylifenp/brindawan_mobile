@@ -6,10 +6,13 @@ import com.brindawan.mobile.data.KeycloakAuthRepository
 import com.brindawan.mobile.data.KtorMuseumApi
 import com.brindawan.mobile.data.MuseumRepository
 import com.brindawan.mobile.data.ProductRepository
+import com.brindawan.mobile.data.DealerRepository
+import com.brindawan.mobile.data.ContactRepository
 import com.brindawan.mobile.screens.auth.AuthViewModel
 import com.brindawan.mobile.screens.detail.DetailViewModel
 import com.brindawan.mobile.screens.list.ListViewModel
 import com.brindawan.mobile.screens.products.ProductsViewModel
+import com.brindawan.mobile.screens.locations.LocationsViewModel
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.cache.normalized.memory.MemoryCacheFactory
 import com.brindawan.mobile.cache.Cache.cache
@@ -47,6 +50,8 @@ val dataModule = module {
     single { AuthSessionStore() }
     single { KeycloakAuthRepository(get()) }
     single { ProductRepository(get<ApolloClient>()) }
+    single { DealerRepository(get<ApolloClient>()) }
+    single { ContactRepository(get<ApolloClient>()) }
     single {
         MuseumRepository(get(), get()).apply {
             initialize()
@@ -59,6 +64,7 @@ val viewModelModule = module {
     factoryOf(::DetailViewModel)
     factoryOf(::ProductsViewModel)
     factoryOf(::AuthViewModel)
+    factoryOf(::LocationsViewModel)
 }
 
 data class AppConfig(

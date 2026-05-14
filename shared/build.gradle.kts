@@ -40,6 +40,10 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.security.crypto)
+            implementation(libs.google.maps.compose)
+            implementation(libs.google.maps.services)
+            implementation("com.google.android.gms:play-services-maps:18.2.0")
+            implementation("com.google.android.gms:play-services-location:21.3.0")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

@@ -2,5 +2,15 @@ query Dealers {
     dealers {
         id
         shopName
+        phones
+        address {
+            city
+            municipality
+            plusCode
+            coordinate {
+                latitude
+                longitude
+            }
+        }
     }
 }

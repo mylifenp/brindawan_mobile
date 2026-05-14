@@ -3,6 +3,12 @@ query Products {
         product {
             id
             name
+            description
+        }
+        variations {
+            label
+            price
+            imageUrls
         }
     }
 }

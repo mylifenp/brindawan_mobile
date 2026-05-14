@@ -1,6 +1,7 @@
 package com.brindawan.mobile.di
 
 import com.brindawan.mobile.data.InMemoryMuseumStorage
+import com.brindawan.mobile.data.AuthSessionStore
 import com.brindawan.mobile.data.KeycloakAuthRepository
 import com.brindawan.mobile.data.KtorMuseumApi
 import com.brindawan.mobile.data.MuseumRepository
@@ -23,7 +24,7 @@ import org.koin.dsl.module
 
 private const val DEFAULT_GRAPHQL_URL = "https://api.brindawan.com/graphql"
 private const val DEFAULT_KEYCLOAK_REALM_URL = "https://auth.brindawan.com/realms/brindawan"
-private const val DEFAULT_KEYCLOAK_CLIENT_ID = "brindawan_id"
+private const val DEFAULT_KEYCLOAK_CLIENT_ID = "brindawan_mobile"
 private const val DEFAULT_KEYCLOAK_REDIRECT_URI = "com.brindawan.mobile://auth/callback"
 private const val DEFAULT_KEYCLOAK_SCOPE = "openid profile email"
 private const val DEFAULT_KEYCLOAK_CLIENT_SECRET = ""
@@ -43,6 +44,7 @@ val dataModule = module {
         KtorMuseumApi(get())
     }
     single<com.brindawan.mobile.data.MuseumStorage> { InMemoryMuseumStorage() }
+    single { AuthSessionStore() }
     single { KeycloakAuthRepository(get()) }
     single { ProductRepository(get<ApolloClient>()) }
     single {

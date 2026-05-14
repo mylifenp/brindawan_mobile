@@ -27,6 +27,15 @@ class KeycloakAuthRepository(
 
     suspend fun loginWithAuthorizationCode(code: String): AuthSession {
         val tokenResponse = keycloakClient.fetchTokenByAuthorizationCode(code)
+        return toAuthSession(tokenResponse)
+    }
+
+    suspend fun refreshSession(refreshToken: String): AuthSession {
+        val tokenResponse = keycloakClient.refreshToken(refreshToken)
+        return toAuthSession(tokenResponse)
+    }
+
+    private suspend fun toAuthSession(tokenResponse: klsoft.kotlin.multiplatform.keycloakclient.ResponseResult): AuthSession {
         if (tokenResponse.responseStatusCode !in 200..299) {
             val errorDescription = tokenResponse.data.string("error_description")
             val error = tokenResponse.data.string("error")

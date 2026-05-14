@@ -3,6 +3,7 @@ package com.brindawan.mobile.screens.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brindawan.mobile.data.AuthSession
+import com.brindawan.mobile.data.AuthSessionStore
 import com.brindawan.mobile.data.KeycloakAuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,11 +22,16 @@ data class AuthUiState(
 
 class AuthViewModel(
     private val keycloakAuthRepository: KeycloakAuthRepository,
+    private val authSessionStore: AuthSessionStore,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            restorePersistedSession()
+        }
+
         viewModelScope.launch {
             AuthDeepLinkHandler.authorizationCodeEvents().collect { code ->
                 _uiState.update { it.copy(authorizationCode = code) }
@@ -34,7 +40,26 @@ class AuthViewModel(
         }
     }
 
-    fun prepareLogin() {
+    private suspend fun restorePersistedSession() {
+        val session = authSessionStore.load() ?: return
+        val restoredSession = if (session.refreshToken.isNullOrBlank()) {
+            session
+        } else {
+            runCatching { keycloakAuthRepository.refreshSession(session.refreshToken) }
+                .getOrElse { session }
+        }
+
+
+        authSessionStore.save(restoredSession)
+        _uiState.update {
+            it.copy(
+                session = restoredSession,
+                errorMessage = null,
+            )
+        }
+    }
+
+    fun prepareLogin(): String {
         // Always generate a fresh URL + PKCE code_verifier pair together.
         // To avoid a verifier/code mismatch, clear any previously-generated URL
         // so the user knows to use the new one.
@@ -46,6 +71,7 @@ class AuthViewModel(
                 errorMessage = null,
             )
         }
+        return freshUrl
     }
 
     /** Resets the login flow so the user can start over without creating a new PKCE pair. */
@@ -79,6 +105,7 @@ class AuthViewModel(
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         runCatching { keycloakAuthRepository.loginWithAuthorizationCode(code) }
             .onSuccess { session ->
+                authSessionStore.save(session)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -103,6 +130,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             runCatching { keycloakAuthRepository.logout(_uiState.value.session?.refreshToken) }
+            authSessionStore.clear()
             _uiState.update {
                 it.copy(
                     isLoading = false,

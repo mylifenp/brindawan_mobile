@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brindawan.mobile.data.AuthSession
 import com.brindawan.mobile.data.AuthSessionStore
+import com.brindawan.mobile.data.ContactRepository
 import com.brindawan.mobile.data.KeycloakAuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,11 +19,19 @@ data class AuthUiState(
     val loginUrl: String? = null,
     val session: AuthSession? = null,
     val errorMessage: String? = null,
+    val contactName: String = "",
+    val contactEmail: String = "",
+    val contactPhone: String = "",
+    val contactMessage: String = "",
+    val isSendingContact: Boolean = false,
+    val contactSuccessMessage: String? = null,
+    val contactErrorMessage: String? = null,
 )
 
 class AuthViewModel(
     private val keycloakAuthRepository: KeycloakAuthRepository,
     private val authSessionStore: AuthSessionStore,
+    private val contactRepository: ContactRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
@@ -55,6 +64,8 @@ class AuthViewModel(
             it.copy(
                 session = restoredSession,
                 errorMessage = null,
+                contactName = restoredSession.preferredUsername.orEmpty(),
+                contactEmail = restoredSession.email.orEmpty(),
             )
         }
     }
@@ -89,6 +100,115 @@ class AuthViewModel(
         _uiState.update { it.copy(authorizationCode = value) }
     }
 
+    fun ensureContactDefaultsFromSession() {
+        _uiState.update { state ->
+            val session = state.session ?: return@update state
+            state.copy(
+                contactName = state.contactName.ifBlank { session.preferredUsername.orEmpty() },
+                contactEmail = state.contactEmail.ifBlank { session.email.orEmpty() },
+            )
+        }
+    }
+
+    fun onContactNameChange(value: String) {
+        _uiState.update {
+            it.copy(
+                contactName = value,
+                contactSuccessMessage = null,
+                contactErrorMessage = null,
+            )
+        }
+    }
+
+    fun onContactEmailChange(value: String) {
+        _uiState.update {
+            it.copy(
+                contactEmail = value,
+                contactSuccessMessage = null,
+                contactErrorMessage = null,
+            )
+        }
+    }
+
+    fun onContactPhoneChange(value: String) {
+        _uiState.update {
+            it.copy(
+                contactPhone = value,
+                contactSuccessMessage = null,
+                contactErrorMessage = null,
+            )
+        }
+    }
+
+    fun onContactMessageChange(value: String) {
+        _uiState.update {
+            it.copy(
+                contactMessage = value,
+                contactSuccessMessage = null,
+                contactErrorMessage = null,
+            )
+        }
+    }
+
+    fun sendContactMessage() {
+        val current = _uiState.value
+        if (current.session == null) {
+            _uiState.update { it.copy(contactErrorMessage = "Please sign in first") }
+            return
+        }
+
+        val name = current.contactName.trim()
+        val email = current.contactEmail.trim()
+        val phone = current.contactPhone.trim()
+        val message = current.contactMessage.trim()
+
+        if (name.isBlank() || email.isBlank() || phone.isBlank() || message.isBlank()) {
+            _uiState.update {
+                it.copy(
+                    contactErrorMessage = "Please fill in name, email, phone and message",
+                    contactSuccessMessage = null,
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    isSendingContact = true,
+                    contactErrorMessage = null,
+                    contactSuccessMessage = null,
+                )
+            }
+
+            runCatching {
+                contactRepository.createContact(
+                    name = name,
+                    email = email,
+                    phone = phone,
+                    message = message,
+                )
+            }.onSuccess {
+                _uiState.update {
+                    it.copy(
+                        isSendingContact = false,
+                        contactMessage = "",
+                        contactSuccessMessage = "Message sent successfully",
+                        contactErrorMessage = null,
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isSendingContact = false,
+                        contactSuccessMessage = null,
+                        contactErrorMessage = error.message ?: "Failed to send message",
+                    )
+                }
+            }
+        }
+    }
+
     fun login() {
         val code = _uiState.value.authorizationCode.trim()
         if (code.isBlank()) {
@@ -113,6 +233,12 @@ class AuthViewModel(
                         loginUrl = null,
                         errorMessage = null,
                         authorizationCode = "",
+                        contactName = session.preferredUsername.orEmpty(),
+                        contactEmail = session.email.orEmpty(),
+                        contactPhone = "",
+                        contactMessage = "",
+                        contactSuccessMessage = null,
+                        contactErrorMessage = null,
                     )
                 }
             }
@@ -138,6 +264,13 @@ class AuthViewModel(
                     loginUrl = null,
                     authorizationCode = "",
                     errorMessage = null,
+                    contactName = "",
+                    contactEmail = "",
+                    contactPhone = "",
+                    contactMessage = "",
+                    isSendingContact = false,
+                    contactSuccessMessage = null,
+                    contactErrorMessage = null,
                 )
             }
         }

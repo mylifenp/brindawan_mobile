@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URI
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -68,14 +69,27 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    signingConfigs {
+        create("release") {
+            val props = rootProject.file("local.properties").inputStream().use { stream ->
+                Properties().apply { load(stream) }
+            }
+            storeFile = rootProject.file(props.getProperty("RELEASE_STORE_FILE"))
+            storePassword = props.getProperty("RELEASE_STORE_PASSWORD")
+            keyAlias = props.getProperty("RELEASE_KEY_ALIAS")
+            keyPassword = props.getProperty("RELEASE_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 }
 

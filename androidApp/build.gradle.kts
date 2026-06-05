@@ -51,8 +51,13 @@ android {
         applicationId = "com.brindawan.mobile"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        val gitCommitCount = providers.exec {
+            commandLine("git", "rev-list", "--count", "HEAD")
+        }.standardOutput.asText.map { it.trim().toInt() }.getOrElse(1)
+
+        versionCode = gitCommitCount
+        versionName = "1.0.$gitCommitCount"
+
         buildConfigField("String", "GRAPHQL_SERVER_URL", "\"${graphqlServerUrl.get()}\"")
         buildConfigField("String", "KEYCLOAK_REALM_URL", "\"${keycloakRealmUrl.get()}\"")
         buildConfigField("String", "KEYCLOAK_CLIENT_ID", "\"${keycloakClientId.get()}\"")
@@ -98,3 +103,4 @@ kotlin {
         jvmTarget = JvmTarget.JVM_11
     }
 }
+

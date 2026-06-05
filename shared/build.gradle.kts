@@ -42,8 +42,8 @@ kotlin {
             implementation(libs.androidx.security.crypto)
             implementation(libs.google.maps.compose)
             implementation(libs.google.maps.services)
-            implementation("com.google.android.gms:play-services-maps:18.2.0")
-            implementation("com.google.android.gms:play-services-location:21.3.0")
+            implementation(libs.play.services.maps)
+            implementation(libs.play.services.location)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -57,8 +57,7 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.apollo.runtime)
-//            implementation(libs.apollo.normalized.cache)
-            implementation(libs.normalized.cache)
+            implementation(libs.apollo.normalized.cache)
 
             implementation(libs.navigation.compose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
@@ -92,7 +91,7 @@ apollo {
             endpointUrl.set("https://api.brindawan.com/graphql")
             schemaFile.set(file("src/commonMain/graphql/graphql.schema.json"))
         }
-        plugin("com.apollographql.cache:normalized-cache-apollo-compiler-plugin:1.0.3")
+        plugin(libs.apollo.normalized.cache.compiler.plugin)
         pluginArgument("com.apollographql.cache.packageName", packageName.get())
     }
     generateSourcesDuringGradleSync.set(true)

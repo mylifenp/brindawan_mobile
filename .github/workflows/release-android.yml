@@ -1,0 +1,73 @@
+name: Publish Android (KMP)
+
+on:
+  push:
+    tags:
+      - "v*.*.*-android"
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Google Play track"
+        required: true
+        default: "internal"
+        type: choice
+        options: [internal, alpha, beta, production]
+      status:
+        description: "Release status"
+        required: true
+        default: "completed"
+        type: choice
+        options: [completed, draft, inProgress]
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission
+        run: chmod +x ./gradlew
+
+      - name: Prepare signing files
+        shell: bash
+        env:
+          KEYSTORE_B64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_B64" | base64 --decode > release.jks
+          cat > local.properties <<EOF
+          RELEASE_STORE_FILE=release.jks
+          RELEASE_STORE_PASSWORD=${RELEASE_STORE_PASSWORD}
+          RELEASE_KEY_ALIAS=${RELEASE_KEY_ALIAS}
+          RELEASE_KEY_PASSWORD=${RELEASE_KEY_PASSWORD}
+          EOF
+
+      - name: Build release AAB
+        run: ./gradlew :androidApp:bundleRelease --no-daemon
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.brindawan.mobile
+          releaseFiles: androidApp/build/outputs/bundle/release/androidApp-release.aab
+          track: ${{ github.event.inputs.track || 'internal' }}
+          status: ${{ github.event.inputs.status || 'completed' }}

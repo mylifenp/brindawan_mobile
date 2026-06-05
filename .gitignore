@@ -17,4 +17,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-upload-keystore.jks
+upload-keystore.jks*

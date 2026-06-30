@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.apollo) apply(false)
+    alias(libs.plugins.googleGmsGoogleServices) apply false
 }

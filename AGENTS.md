@@ -6,8 +6,8 @@
 
 # Libraries used in this project
 - [Apollo Kotlin](https://www.apollographql.com/docs/kotlin/v5)
-- [Kotlin] version 2.3.21 [Documentation](https://kotlinlang.org/docs/home.html)
-- [Multiplatform] version 2.3.21 [Documentation](https://kotlinlang.org/docs/multiplatform/get-started.html)
+- [Kotlin] version 2.4.0 [Documentation](https://kotlinlang.org/docs/home.html)
+- [Multiplatform] version 2.4.0 [Documentation](https://kotlinlang.org/docs/multiplatform/get-started.html)
 - [kotlin-multiplatform-keycloak-client] version 1.0.2 [Documentation](https://github.com/klsoft-mobile/kotlin-multiplatform-keycloak-client)
 - [Compose Multiplatform] version 1.11.0
 - [Koin] version 4.2.1 (DI)

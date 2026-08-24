@@ -74,6 +74,9 @@ kotlin {
 
             implementation(libs.keycloak.client)
             implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.alarmee)
+            implementation(libs.alarmee.push)
         }
     }
 }

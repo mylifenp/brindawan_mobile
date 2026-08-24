@@ -24,7 +24,8 @@ google-maps-services = "6.0.1"
 google-play-services = "20.0.0"
 play-services-location="21.4.0"
 googleGmsGoogleServices = "4.5.0"
-firebaseMessaging = "25.1.0"
+alarmee = "2.7.0"
+firebase-bom = "34.15.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -60,7 +61,10 @@ play-services-location = { module = "com.google.android.gms:play-services-locati
 apollo-runtime = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
 apollo-normalized-cache = { group = "com.apollographql.cache", name = "normalized-cache", version.ref = "normalizedCache" }
 apollo-normalized-cache-compiler-plugin = { group = "com.apollographql.cache", name = "normalized-cache-apollo-compiler-plugin", version.ref = "normalizedCache" }
-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+
+alarmee = { group = "io.github.tweener", name = "alarmee", version.ref = "alarmee" }
+alarmee-push = { group = "io.github.tweener", name = "alarmee-push", version.ref = "alarmee" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -9,7 +9,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.firebase.messaging)
     implementation(projects.shared)
     implementation(libs.androidx.activity.compose)
     implementation(libs.compose.uiToolingPreview)
